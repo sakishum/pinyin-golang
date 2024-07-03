@@ -1,6 +1,7 @@
 package pinyin
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -164,16 +165,16 @@ func (p *Dict) Convert(s string, sep string) (result *ConvertResult) {
 // Sentence 中文转换为拼音, 保留标点符号
 func (p *Dict) Sentence(s string) (result *ConvertResult) {
 	s = p.romanize(s, false)
+	fmt.Println("Sentence, s1:", s)
 
 	r := regexp.QuoteMeta(strings.Join(punctuations, ""))
 	r = strings.Replace(r, " ", "", -1)
 	re := regexp.MustCompile("[^a-zA-Z0-9" + r + `\s_]+`)
 	s = re.ReplaceAllString(s, "")
-
 	for i := 0; i < len(punctuations); i += 2 {
 		s = strings.Replace(s, punctuations[i], punctuations[i+1], -1)
 	}
-
+	fmt.Println("Sentence, s2:", s)
 	result = NewConvertResult(s)
 	return
 }
@@ -216,7 +217,7 @@ func (p *Dict) prepare(s string) string {
 
 func (p *Dict) romanize(s string, convertName bool) string {
 	s = p.prepare(s)
-
+	fmt.Println("romanize, s1:", s)
 	if convertName {
 		for i := 0; i < len(surnames); i += 2 {
 			if strings.Index(s, surnames[i]) == 0 {
@@ -227,8 +228,9 @@ func (p *Dict) romanize(s string, convertName bool) string {
 
 	for i := 0; i < len(dict); i += 2 {
 		s = strings.Replace(s, dict[i], dict[i+1], -1)
+		fmt.Println("romanize, s2:", dict[i], dict[i+1])
 	}
-
+	fmt.Println("romanize, s3:", s)
 	s = strings.Replace(s, "\t", " ", -1)
 	s = strings.Replace(s, "  ", " ", -1)
 	s = strings.TrimSpace(s)
